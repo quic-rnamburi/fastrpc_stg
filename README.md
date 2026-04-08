@@ -14,15 +14,17 @@ The following diagram depicts the major FastRPC software components on the CPU a
 
 ```mermaid
 flowchart TD
-subgraph SMD[Shared Memory Driver]
+subgraph SMD[FastRPC Architecture]
 direction TB
+subgraph TOPROW[" "]
+direction LR
 subgraph CPU[CPU]
 direction TB
 subgraph Application[Application]
 direction TB
 Stub[Stub]
 FRPC_UD[FastRPC user driver]
-Stub --> FRPC_UD
+Stub <--> FRPC_UD
 end
 end
 subgraph DSP[DSP]
@@ -31,26 +33,32 @@ subgraph User_PD[User PD]
 direction TB
 Skel[Skel]
 FRPC_DD[FastRPC DSP user driver]
-Skel --> FRPC_DD
+Skel <--> FRPC_DD
 end
+end
+CPU ~~~ DSP
 end
 subgraph Kernel_Space[Kernel Space]
-direction TB
+direction LR
 FRPC_KD[FastRPC Kernel driver]
+FRPC_DSP_KD[FastRPC DSP driver]
 end
-FRPC_UD --> FRPC_KD
-FRPC_DD --> FRPC_KD
+FRPC_UD <--> FRPC_KD
+FRPC_DD <--> FRPC_DSP_KD
+FRPC_KD <--> FRPC_DSP_KD
 end
 classDef generated fill:#E6E6FA,stroke:#9370DB,color:#000
 classDef fastrpc fill:#4169E1,stroke:#000,color:#000
 classDef shared fill:#FAFAFA,stroke:#666,color:#000
 classDef userpdbox fill:#ABDBE3,stroke:#666,color:#000
 classDef mainbox fill:#7FB3CD,stroke:#666,color:#000
+classDef toprow fill:none,stroke:none
 class Stub,Skel generated
-class FRPC_UD,FRPC_DD,FRPC_KD fastrpc
+class FRPC_UD,FRPC_DD,FRPC_KD,FRPC_DSP_KD fastrpc
 class SMD shared
 class Application,User_PD userpdbox
 class CPU,DSP,Kernel_Space mainbox
+class TOPROW toprow
 linkStyle default stroke:#000
 ```
 
